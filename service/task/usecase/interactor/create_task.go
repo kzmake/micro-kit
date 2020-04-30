@@ -7,23 +7,24 @@ import (
 
 	"github.com/kzmake/micro-kit/service/task/domain/aggregate"
 	"github.com/kzmake/micro-kit/service/task/domain/vo"
-	"github.com/kzmake/micro-kit/service/task/usecase/port"
+	"github.com/kzmake/micro-kit/service/task/usecase/input"
+	"github.com/kzmake/micro-kit/service/task/usecase/output"
 )
 
 type createTaskInteractor struct {
-	outputPort port.CreateTaskOutputPort
+	outputPort output.CreateTaskPort
 }
 
 // NewCreateTaskInteractor はタスクに関する Interactor を生成します。
-func NewCreateTaskInteractor(outputPort port.CreateTaskOutputPort) port.CreateTaskInputPort {
+func NewCreateTaskInteractor(outputPort output.CreateTaskPort) input.CreateTaskPort {
 	return &createTaskInteractor{
 		outputPort: outputPort,
 	}
 }
 
 // Handle は InputData をもとにタスク生成を行いを OutputData を生成します。
-func (i *createTaskInteractor) Handle(ctx context.Context, input *port.CreateTaskInputData) *port.CreateTaskOutputData {
-	task := &aggregate.Task{
+func (i *createTaskInteractor) Handle(ctx context.Context, in *input.CreateTaskData) *output.CreateTaskData {
+	out := &aggregate.Task{
 		ID:          vo.ID("uniq_id"),
 		Description: vo.Description("hogehoge"),
 	}
@@ -33,5 +34,5 @@ func (i *createTaskInteractor) Handle(ctx context.Context, input *port.CreateTas
 	//		xerrors.Errorf("error: %w", err)
 	// }
 
-	return i.outputPort.Handle(ctx, task, nil)
+	return i.outputPort.Handle(ctx, out, nil)
 }
