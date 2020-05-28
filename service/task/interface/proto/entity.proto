@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package kmkit.service.task.v1;
+
+option go_package = "github.com/kzmake/micro-kit/service/task/interface/proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+// Task Entity
+message Task {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  google.protobuf.Timestamp deleted_at = 4;
+  google.protobuf.StringValue description = 5;
+}
