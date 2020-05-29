@@ -6,7 +6,7 @@ import (
 	"github.com/kzmake/micro-kit/service/task/domain/vo"
 )
 
-// IDRepository はIDに関するリポジトリのIFです。
-type IDRepository interface {
+// ID はIDに関するリポジトリのIFです。
+type ID interface {
 	Gen(context.Context) (vo.ID, error)
 }

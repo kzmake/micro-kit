@@ -4,18 +4,18 @@ import (
 	"context"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
-	"github.com/kzmake/micro-kit/service/task/usecase/port"
+	"github.com/kzmake/micro-kit/service/task/usecase/input"
 )
 
 type taskController struct {
-	createTaskInputPort port.CreateTaskInputPort
+	createTaskInputPort input.CreateTaskPort
 }
 
 // interfaces
 var _ proto.TaskServiceHandler = (*taskController)(nil)
 
 // NewTaskController はタスクに関する Controller を生成します。
-func NewTaskController(createTaskInputPort port.CreateTaskInputPort) proto.TaskServiceHandler {
+func NewTaskController(createTaskInputPort input.CreateTaskPort) proto.TaskServiceHandler {
 	return &taskController{
 		createTaskInputPort: createTaskInputPort,
 	}
@@ -27,13 +27,13 @@ func (c *taskController) Create(ctx context.Context, req *proto.CreateRequest, r
 		return err
 	}
 
-	input := &port.CreateTaskInputData{
+	in := &input.CreateTaskData{
 		Description: req.Description.Value,
 	}
 
-	output := c.createTaskInputPort.Handle(ctx, input)
+	out := c.createTaskInputPort.Handle(ctx, in)
 
-	if output.Error != nil {
+	if out.Error != nil {
 		rsp.Task = &proto.Task{
 			Description: req.GetDescription(),
 		}
@@ -41,5 +41,5 @@ func (c *taskController) Create(ctx context.Context, req *proto.CreateRequest, r
 		return nil
 	}
 
-	return output.Error
+	return out.Error
 }
