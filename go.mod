@@ -8,6 +8,7 @@ require (
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/armon/go-metrics v0.3.3 // indirect
 	github.com/bazelbuild/bazelisk v1.4.0
+	github.com/bazelbuild/rules_go v0.23.2 // indirect
 	github.com/bufbuild/buf v0.7.0
 	github.com/coreos/bbolt v1.3.4 // indirect
 	github.com/coreos/etcd v3.3.22+incompatible // indirect
