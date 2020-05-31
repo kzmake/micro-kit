@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package kmkit.service.task.v1;
+package task;
 
 option go_package = "github.com/kzmake/micro-kit/service/task/interface/proto";
 
@@ -9,7 +9,7 @@ import "third_party/proto/validate/validate.proto";
 import "service/task/interface/proto/entity.proto";
 
 // Task Service
-service TaskService {
+service Task {
   rpc Create(CreateRequest) returns (CreateResponse);
 }
 
@@ -22,5 +22,5 @@ message CreateRequest {
 }
 
 message CreateResponse {
-  kmkit.service.task.v1.Task task = 1;
+  entity.Task task = 1;
 }

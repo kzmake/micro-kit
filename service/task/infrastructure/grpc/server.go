@@ -1,14 +1,22 @@
 package grpc
 
 import (
-	"fmt"
-
 	cli "github.com/micro/cli/v2"
 	micro "github.com/micro/go-micro/v2"
+	"github.com/micro/go-micro/v2/server"
+	registry "github.com/micro/go-plugins/registry/etcdv3/v2"
+	"golang.org/x/xerrors"
+
+	"github.com/kzmake/micro-kit/pkg/constant"
+	"github.com/kzmake/micro-kit/pkg/logger"
+	logWrapper "github.com/kzmake/micro-kit/pkg/wrapper/log"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
+)
 
-	logWrapper "github.com/kzmake/micro-kit/pkg/wrapper/log"
+var (
+	service = constant.Service.Task
+	version = "v0.1.0"
 )
 
 // Server はサーバーとして動作するアプリケーションです。
@@ -17,18 +25,13 @@ type Server interface {
 }
 
 // New はサーバーを生成します。
-func New(
-	serviceName string, version string,
-	taskController proto.TaskServiceHandler,
-) Server {
-	s := micro.NewService(
-		micro.Name(serviceName),
+func New(taskController proto.TaskHandler) Server {
+	service := micro.NewService(
+		micro.Name(service),
 		micro.Version(version),
 	)
-
-	// Initialize service
-	options := []micro.Option{
-		// initialize
+	service.Init(
+		// init
 		micro.Action(func(c *cli.Context) error {
 			// load config
 			return nil
@@ -38,15 +41,20 @@ func New(
 		micro.WrapHandler(logWrapper.NewHandlerWrapper()),
 		micro.WrapSubscriber(logWrapper.NewSubscriberWrapper()),
 		micro.WrapClient(logWrapper.NewClientWrapper()),
-	}
 
-	// Initialize
-	s.Init(options...)
+		// service registry
+		micro.Registry(registry.NewRegistry()),
+	)
+
+	s := service.Server()
+	s.Init(
+		server.Wait(nil),
+	)
 
 	// Register Handler
-	if err := proto.RegisterTaskServiceHandler(s.Server(), taskController); err != nil {
-		fmt.Println("Error: Handlerの登録に失敗しました")
+	if err := proto.RegisterTaskHandler(s, taskController); err != nil {
+		logger.Errorf("%+v", xerrors.Errorf("handler の登録に失敗しました: %w", err))
 	}
 
-	return s
+	return service
 }
