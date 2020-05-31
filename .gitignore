@@ -94,8 +94,10 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/go,linux,macos,windows
 
 # custom
-## IDE specific files
 .idea/
 *.iml
 *.swp
 .vscode
+bazel-*
+bin
+.cache
