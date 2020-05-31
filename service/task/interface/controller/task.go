@@ -12,10 +12,10 @@ type taskController struct {
 }
 
 // interfaces
-var _ proto.TaskServiceHandler = (*taskController)(nil)
+var _ proto.TaskHandler = (*taskController)(nil)
 
 // NewTaskController はタスクに関する Controller を生成します。
-func NewTaskController(createTaskInputPort input.CreateTaskPort) proto.TaskServiceHandler {
+func NewTaskController(createTaskInputPort input.CreateTaskPort) proto.TaskHandler {
 	return &taskController{
 		createTaskInputPort: createTaskInputPort,
 	}

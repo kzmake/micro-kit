@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package kmkit.service.task.v1;
+package entity;
 
 option go_package = "github.com/kzmake/micro-kit/service/task/interface/proto";
 
