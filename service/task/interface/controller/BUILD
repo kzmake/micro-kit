@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["task.go"],
+    importpath = "github.com/kzmake/micro-kit/service/task/interface/controller",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//service/task/interface/proto:go_default_library",
+        "//service/task/usecase/input:go_default_library",
+    ],
+)
