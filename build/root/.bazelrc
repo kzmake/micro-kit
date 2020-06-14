@@ -1,0 +1,18 @@
+startup --expand_configs_in_place --host_jvm_args=-XX:-UseParallelGC
+
+build --verbose_failures
+test --test_output=errors
+
+build --stamp
+build --color=yes
+test --color=yes
+
+build --features=race
+test --features=race
+
+test:small --build_tests_only
+test:small --test_tag_filters=small,-medium,-large
+test:small --flaky_test_attempts=3
+
+test:medium --local_test_jobs 4
+test:medium --test_tag_filters=-small,medium,-large

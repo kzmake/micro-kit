@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "level.go",
+        "logger.go",
+        "option.go",
+    ],
+    importpath = "github.com/kzmake/micro-kit/pkg/logger",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/rs/zerolog:go_default_library",
+        "//vendor/github.com/rs/zerolog/pkgerrors:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["logger_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/rs/zerolog:go_default_library",
+        "//vendor/github.com/stretchr/testify/require:go_default_library",
+    ],
+)

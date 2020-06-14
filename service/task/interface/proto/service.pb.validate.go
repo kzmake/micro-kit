@@ -127,10 +127,10 @@ func (m *CreateResponse) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetTask()).(interface{ Validate() error }); ok {
+	if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return CreateResponseValidationError{
-				field:  "Task",
+				field:  "Result",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}

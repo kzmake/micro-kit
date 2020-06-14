@@ -3,7 +3,7 @@ package constant
 type serviceKey = string
 
 const (
-	task serviceKey = "task"
+	task serviceKey = "kzmake.microkit.task.v1"
 )
 
 // Service はサービスの定義です。

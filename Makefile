@@ -1,27 +1,47 @@
 
 SERVICE_DIR := service
 
-SOURCES := $(shell find . -name "*.go" -type f)
-
-__symbol := 🧊
+SOURCES := $(shell find . \
+	-type f -name '*.go' \
+	-not -name '*.pb*.go' \
+	-not -path "./vendor/*" \
+	-not -path "./hack/tools/vendor/*")
 
 $(warning SERVICE_DIR = $(SERVICE_DIR))
 
 .DEFAULT_GOAL := help
 
 .PHONY: tools
-tools: ## 開発に必要なツールをインストールします (./bin/)
+tools: ## 開発に必要なツールをインストールします
 	@echo "\033[31m"
 	@echo "$$ brew install protobuf"
 	@echo "\033[0m"
-	go generate -tags=tools ./...
-	go install github.com/golang/protobuf/protoc-gen-go
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint
-	ls -l ./bin
+	make -C hack/tools install
+
+.PHONY: lint
+lint: ## コードを検証します
+	golangci-lint run
 
 .PHONY: fmt
-fmt: ## goファイルをフォーマットします
-	bin/goimports -l -w .
+fmt: ## コードをフォーマットします
+	@goimports -l -w $(SOURCES)
+
+.PHONY: mod
+mod: ## mod.go / mod.sum を整理します
+	go mod tidy
+	go mod vendor
+
+.PHONY: bazel
+bazel: ## bazel
+	bazelisk run //:vendor
+	bazelisk run //:gazelle -- update
+	@echo "\033[31m"
+	@echo "$$ bazelisk run //:vendor"
+	@echo "$$ bazelisk run //:gazelle -- update"
+	@echo "$$ bazelisk test //..."
+	@echo "$$ bazelisk run //service/task/cmd/srv:srv"
+	@echo "$$ bazelisk build //service/task/cmd/srv:srv"
+	@echo "\033[0m"
 
 .PHONY: proto
 proto: ## protoファイルからgoファイルを生成します
@@ -34,24 +54,23 @@ proto: ## protoファイルからgoファイルを生成します
 		--micro_out=paths=source_relative:. \
 		--validate_out=lang=go,paths=source_relative:. \
 		$$f; \
-		echo "${__symbol} generating $$f"; \
+		echo "generating $$f"; \
 	done
 
 .PHONY: proto/lint
 proto/lint: ## protoファイルを検証します
-	@echo "${__symbol} linting protos"
-	./bin/buf check lint
+	@echo "linting protos"
+	buf check lint
 
 .PHONY: proto/fmt
 proto/fmt: proto/lint ## protoファイルのフォーマットを行います
-	@echo "${__symbol} formating protos"
-	@prototool format -d .
-	@prototool format -w .
+	@echo "formating protos"
+	prototool format -d . || true
+	prototool format -w .
 
 .PHONY: module
 module: ## mod.go / mod.sum を整理します
 	go get google.golang.org/grpc@v1.26
-	go mod edit -require=google.golang.org/grpc@v1.26.0
 	go mod tidy
 
 .PHONY: task/service
@@ -70,25 +89,11 @@ task/run: task/service module ## taskサービスを起動します by go run
 
 .PHONY: task/bazel/run ## taskサービスを起動します by bazel
 task/bazel/run: task/service bazel/gazelle bazel/update/repo
-	./bin/bazelisk run service/task/cmd/srv:srv
-
-.PHONY: bazel/gazelle
-bazel/gazelle: ## gazelleをセットアップします
-	./bin/bazelisk run :gazelle
-
-.PHONY: bazel/update/repo
-bazel/update/repo: ## go.modからbazelのgo-repositoriesを更新します
-	./bin/bazelisk run :gazelle -- update-repos -from_file=go.mod -build_file_proto_mode=disable_global
-
-.PHONY: bazel/update/repo/prune
-bazel/update/repo/prune: ## go.modからbazelのgo-repositoriesを更新します(不要な依存パッケージは削除されます)
-	go mod tidy
-	./bin/bazelisk run :gazelle -- update-repos -from_file=go.mod -build_file_proto_mode=disable_global -prune=true
+	bazelisk run service/task/cmd/srv:srv
 
 .PHONY: bazel/clean
-bazel/clean: ## bazelで生成された中間ファイルやBUILDなどをすべて削除します
-	./bin/bazelisk clean --expunge
-	find . -path "./BUILD*" -prune -o -type f -name 'BUILD*' -delete
+bazel/clean: ## bazelで生成された中間ファイルを削除します
+	bazelisk clean --expunge
 
 .PHONY: __
 __:
