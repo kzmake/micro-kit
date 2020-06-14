@@ -49,5 +49,10 @@ func (i *createTask) Handle(
 		return &port.CreateTaskOutputData{Error: xerrors.Errorf("Saveに失敗しました: %w", err)}
 	}
 
+	task, err := i.taskRepository.Find(ctx, task.ID)
+	if err != nil {
+		return &port.CreateTaskOutputData{Error: xerrors.Errorf("Findに失敗しました: %w", err)}
+	}
+
 	return &port.CreateTaskOutputData{Task: task, Error: nil}
 }
