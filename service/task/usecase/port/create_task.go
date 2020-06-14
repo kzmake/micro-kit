@@ -19,12 +19,7 @@ type CreateTaskOutputData struct {
 	Error error
 }
 
-// CreateTaskInputPort はタスク作成のための InputPort です。
-type CreateTaskInputPort interface {
-	Handle(ctx context.Context, input *CreateTaskInputData) *CreateTaskOutputData
-}
-
-// CreateTaskOutputPort はタスク作成のための OutputPort です。
-type CreateTaskOutputPort interface {
-	Handle(ctx context.Context, task *aggregate.Task, err error) *CreateTaskOutputData
+// CreateTask はタスク作成のための Port です。
+type CreateTask interface {
+	Handle(ctx context.Context, in *CreateTaskInputData) *CreateTaskOutputData
 }

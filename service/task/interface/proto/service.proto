@@ -1,26 +1,28 @@
 syntax = "proto3";
 
-package task;
+package kzmake.microkit.task.v1;
 
 option go_package = "github.com/kzmake/micro-kit/service/task/interface/proto";
 
 import "google/protobuf/wrappers.proto";
-import "third_party/proto/validate/validate.proto";
 import "service/task/interface/proto/entity.proto";
+import "third_party/proto/validate/validate.proto";
 
 // Task Service
-service Task {
+service TaskService {
   rpc Create(CreateRequest) returns (CreateResponse);
 }
 
 message CreateRequest {
-  google.protobuf.StringValue description = 1 [(validate.rules).string = {
-    min_len: 0
-    max_len: 255
-    max_bytes: 255
-  }];
+  google.protobuf.StringValue description = 1 [
+    (validate.rules).string = {
+      min_len: 0
+      max_len: 255
+      max_bytes: 255
+    }
+  ];
 }
 
 message CreateResponse {
-  entity.Task task = 1;
+  Task result = 1;
 }

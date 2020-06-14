@@ -2,7 +2,7 @@ build:
   roots:
     - .
   excludes:
-    - e2e
+    - vendor
 lint:
   use:
     - DEFAULT
@@ -11,10 +11,10 @@ lint:
     - PACKAGE_DIRECTORY_MATCH
   ignore:
     - third_party
-    - e2e
+    - vendor
 breaking:
   use:
     - FILE
   ignore:
     - third_party
-    - e2e
+    - vendor

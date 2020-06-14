@@ -5,18 +5,16 @@ package proto
 
 import (
 	fmt "fmt"
-	math "math"
-
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/wrappers"
+	math "math"
+)
 
+import (
 	context "context"
-
 	api "github.com/micro/go-micro/v2/api"
-
 	client "github.com/micro/go-micro/v2/client"
-
 	server "github.com/micro/go-micro/v2/server"
 )
 
@@ -37,13 +35,13 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Api Endpoints for Task service
+// Api Endpoints for TaskService service
 
-func NewTaskEndpoints() []*api.Endpoint {
+func NewTaskServiceEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
-// Client API for Task service
+// Client API for TaskService service
 
 type TaskService interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
@@ -62,7 +60,7 @@ func NewTaskService(name string, c client.Client) TaskService {
 }
 
 func (c *taskService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
-	req := c.c.NewRequest(c.name, "Task.Create", in)
+	req := c.c.NewRequest(c.name, "TaskService.Create", in)
 	out := new(CreateResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -71,27 +69,27 @@ func (c *taskService) Create(ctx context.Context, in *CreateRequest, opts ...cli
 	return out, nil
 }
 
-// Server API for Task service
+// Server API for TaskService service
 
-type TaskHandler interface {
+type TaskServiceHandler interface {
 	Create(context.Context, *CreateRequest, *CreateResponse) error
 }
 
-func RegisterTaskHandler(s server.Server, hdlr TaskHandler, opts ...server.HandlerOption) error {
-	type task interface {
+func RegisterTaskServiceHandler(s server.Server, hdlr TaskServiceHandler, opts ...server.HandlerOption) error {
+	type taskService interface {
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 	}
-	type Task struct {
-		task
+	type TaskService struct {
+		taskService
 	}
-	h := &taskHandler{hdlr}
-	return s.Handle(s.NewHandler(&Task{h}, opts...))
+	h := &taskServiceHandler{hdlr}
+	return s.Handle(s.NewHandler(&TaskService{h}, opts...))
 }
 
-type taskHandler struct {
-	TaskHandler
+type taskServiceHandler struct {
+	TaskServiceHandler
 }
 
-func (h *taskHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
-	return h.TaskHandler.Create(ctx, in, out)
+func (h *taskServiceHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
+	return h.TaskServiceHandler.Create(ctx, in, out)
 }

@@ -1,0 +1,11 @@
+# gazelle:build_file_name BUILD.bazel,BUILD
+# gazelle:prefix github.com/kzmake/micro-kit
+# gazelle:proto disable_global
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+gazelle(name = "gazelle")
+
+load("//build/rules/go:vendor.bzl", "go_vendor")
+
+go_vendor(name = "vendor")

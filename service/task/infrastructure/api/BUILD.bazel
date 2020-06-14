@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "server.go",
+        "task.go",
+    ],
+    importpath = "github.com/kzmake/micro-kit/service/task/infrastructure/api",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/constant:go_default_library",
+        "//pkg/logger/technical:go_default_library",
+        "//service/task/interface/proto:go_default_library",
+        "//vendor/github.com/gin-gonic/gin:go_default_library",
+        "//vendor/github.com/golang/protobuf/ptypes/wrappers:go_default_library",
+        "//vendor/github.com/micro/cli/v2:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/client/grpc:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/registry/etcd:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/web:go_default_library",
+    ],
+)

@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["config.go"],
+    importpath = "github.com/kzmake/micro-kit/pkg/config",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/kelseyhightower/envconfig:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["config_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/kelseyhightower/envconfig:go_default_library",
+        "//vendor/github.com/stretchr/testify/require:go_default_library",
+    ],
+)

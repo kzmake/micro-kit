@@ -1,8 +1,1 @@
-startup --expand_configs_in_place --batch --host_jvm_args=-XX:-UseParallelGC
-
-build --verbose_failures
-test --test_output=errors
-
-build --show_timestamps --keep_going --jobs 600
-build --color=yes
-query --keep_going
+build/root/.bazelrc
