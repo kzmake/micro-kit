@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	createTaskInputPort = interactor.NewCreateTaskInteractor()
-	taskController      = controller.NewTaskController(createTaskInputPort)
+	createTaskInputPort = interactor.NewCreateTask(nil, nil)
+	taskController      = controller.NewTask(createTaskInputPort)
 )
 
 func main() {

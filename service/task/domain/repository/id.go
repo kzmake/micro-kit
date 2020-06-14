@@ -8,5 +8,5 @@ import (
 
 // ID はIDに関するリポジトリのIFです。
 type ID interface {
-	Gen(context.Context) (vo.ID, error)
+	Gen(context.Context) vo.ID
 }

@@ -5,24 +5,34 @@ import (
 	"math/rand"
 	"time"
 
-	// "golang.org/x/xerrors"
+	"golang.org/x/xerrors"
+
 	ulid "github.com/oklog/ulid/v2"
 
 	"github.com/kzmake/micro-kit/service/task/domain/aggregate"
+	"github.com/kzmake/micro-kit/service/task/domain/repository"
 	"github.com/kzmake/micro-kit/service/task/domain/vo"
 	"github.com/kzmake/micro-kit/service/task/usecase/port"
 )
 
-type createTaskInteractor struct {
+type createTask struct {
+	idRepository   repository.ID
+	taskRepository repository.Task
 }
 
-// NewCreateTaskInteractor はタスクに関する Interactor を生成します。
-func NewCreateTaskInteractor() port.CreateTask {
-	return &createTaskInteractor{}
+// NewCreateTask はタスクに関する Interactor を生成します。
+func NewCreateTask(
+	idRepository repository.ID,
+	taskRepository repository.Task,
+) port.CreateTask {
+	return &createTask{
+		idRepository:   idRepository,
+		taskRepository: taskRepository,
+	}
 }
 
 // Handle は InputData をもとにタスク生成を行いを OutputData を生成します。
-func (i *createTaskInteractor) Handle(
+func (i *createTask) Handle(
 	ctx context.Context,
 	in *port.CreateTaskInputData,
 ) *port.CreateTaskOutputData {
@@ -35,10 +45,9 @@ func (i *createTaskInteractor) Handle(
 		Description: vo.Description(in.Description),
 	}
 
-	time.Sleep(1 * time.Second)
-
-	return &port.CreateTaskOutputData{
-		Task:  task,
-		Error: nil,
+	if err := i.taskRepository.Save(ctx, task); err != nil {
+		return &port.CreateTaskOutputData{Error: xerrors.Errorf("Saveに失敗しました: %w", err)}
 	}
+
+	return &port.CreateTaskOutputData{Task: task, Error: nil}
 }

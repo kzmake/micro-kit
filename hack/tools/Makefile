@@ -4,7 +4,7 @@ export GO111MODULE=on
 
 GOBIN ?= $(shell go env GOPATH)/bin
 
-TOOLS= \
+TOOLS = \
 	$(GOBIN)/buf \
 	$(GOBIN)/protoc-gen-buf-check-breaking \
 	$(GOBIN)/protoc-gen-buf-check-lint \
