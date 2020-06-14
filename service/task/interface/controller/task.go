@@ -10,24 +10,24 @@ import (
 	"github.com/kzmake/micro-kit/service/task/usecase/port"
 )
 
-type taskController struct {
+type task struct {
 	createTaskInputPort port.CreateTask
 }
 
 // interfaces
-var _ proto.TaskServiceHandler = (*taskController)(nil)
+var _ proto.TaskServiceHandler = (*task)(nil)
 
-// NewTaskController はタスクに関する Controller を生成します。
-func NewTaskController(
+// NewTask はタスクに関する Controller を生成します。
+func NewTask(
 	createTaskInputPort port.CreateTask,
 ) proto.TaskServiceHandler {
-	return &taskController{
+	return &task{
 		createTaskInputPort: createTaskInputPort,
 	}
 }
 
 // Create は input / output を制御し、タスク生成処理を行います。
-func (c *taskController) Create(
+func (c *task) Create(
 	ctx context.Context,
 	req *proto.CreateRequest,
 	rsp *proto.CreateResponse,

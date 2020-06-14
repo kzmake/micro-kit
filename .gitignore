@@ -255,3 +255,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,intellij+all,visualstudiocode,bazel,go,linux,macos,emacs,windows
+
+# Custom
+# migrate file
+!*.up.sql
+!*.down.sql
