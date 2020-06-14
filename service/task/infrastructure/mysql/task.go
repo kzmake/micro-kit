@@ -3,8 +3,9 @@ package mysql
 import (
 	"context"
 
-	"github.com/jinzhu/gorm"
 	"golang.org/x/xerrors"
+
+	"github.com/jinzhu/gorm"
 
 	"github.com/kzmake/micro-kit/service/task/domain/aggregate"
 	"github.com/kzmake/micro-kit/service/task/domain/repository"
@@ -50,13 +51,17 @@ func (r taskRepository) Save(ctx context.Context, task *aggregate.Task) error {
 // Find はタスクを取得します。
 func (r taskRepository) Find(ctx context.Context, id vo.TaskID) (*aggregate.Task, error) {
 	var res Task
-	if err := r.db.Where("id = ?", id).First(&res); err != nil {
+	if err := r.db.Where("id = ?", string(id)).First(&res).Error; err != nil {
 		return nil, xerrors.Errorf("Findに失敗しました: %w", err)
 	}
 
 	task := &aggregate.Task{
 		ID:          vo.TaskID(res.ID),
 		Description: vo.Description(res.Description),
+
+		CreatedAt: res.CreatedAt,
+		UpdatedAt: res.UpdatedAt,
+		DeletedAt: res.DeletedAt,
 	}
 
 	return task, nil

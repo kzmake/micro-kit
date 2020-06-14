@@ -53,6 +53,16 @@ func (m *Task) Validate() error {
 		}
 	}
 
+	if v, ok := interface{}(m.GetDescription()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TaskValidationError{
+				field:  "Description",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return TaskValidationError{
@@ -77,16 +87,6 @@ func (m *Task) Validate() error {
 		if err := v.Validate(); err != nil {
 			return TaskValidationError{
 				field:  "DeletedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetDescription()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TaskValidationError{
-				field:  "Description",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}

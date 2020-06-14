@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/micro/go-micro/v2/errors"
 
@@ -48,6 +49,11 @@ func (c *task) Create(
 	rsp.Result = &proto.Task{
 		Id:          &wrappers.StringValue{Value: string(out.Task.ID)},
 		Description: &wrappers.StringValue{Value: string(out.Task.Description)},
+		CreatedAt:   &timestamp.Timestamp{Seconds: out.Task.CreatedAt.Unix()},
+		UpdatedAt:   &timestamp.Timestamp{Seconds: out.Task.UpdatedAt.Unix()},
+	}
+	if out.Task.DeletedAt != nil {
+		rsp.Result.DeletedAt = &timestamp.Timestamp{Seconds: out.Task.DeletedAt.Unix()}
 	}
 
 	return nil
