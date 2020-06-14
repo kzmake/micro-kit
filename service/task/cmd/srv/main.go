@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"golang.org/x/xerrors"
 
 	"github.com/jinzhu/gorm"
@@ -11,10 +13,15 @@ import (
 	"github.com/kzmake/micro-kit/service/task/infrastructure/mysql"
 	"github.com/kzmake/micro-kit/service/task/infrastructure/ulid"
 	"github.com/kzmake/micro-kit/service/task/interface/controller"
+	"github.com/kzmake/micro-kit/service/task/usecase/business"
+	"github.com/kzmake/micro-kit/service/task/usecase/business/logger"
 	"github.com/kzmake/micro-kit/service/task/usecase/interactor"
 )
 
 func main() {
+	loggerAssistant := logger.New(os.Stdout)
+	manager := business.New(loggerAssistant)
+
 	db, err := gorm.Open("mysql", "test:test@tcp(localhost:3306)/test?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		technical.Errorf("%+v", xerrors.Errorf("DBの接続に失敗しました: %w", err))
@@ -22,7 +29,7 @@ func main() {
 
 	idRepository := ulid.NewIDRepository()
 	taskRepository := mysql.NewTaskRepository(db)
-	createTaskPort := interactor.NewCreateTask(idRepository, taskRepository)
+	createTaskPort := interactor.NewCreateTask(manager, idRepository, taskRepository)
 	requestController := controller.NewTask(createTaskPort)
 
 	s := grpc.New(requestController)
