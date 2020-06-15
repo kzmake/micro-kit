@@ -10,8 +10,8 @@ import (
 	conf "github.com/kzmake/micro-kit/pkg/config"
 	"github.com/kzmake/micro-kit/pkg/logger/technical"
 
-	"github.com/kzmake/micro-kit/service/task/config"
-	"github.com/kzmake/micro-kit/service/task/registry"
+	"github.com/kzmake/micro-kit/service/task/pkg/config"
+	"github.com/kzmake/micro-kit/service/task/pkg/registry"
 
 	"github.com/kzmake/micro-kit/service/task/infrastructure/grpc"
 	"github.com/kzmake/micro-kit/service/task/interface/proto"

@@ -2,13 +2,19 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["task.go"],
+    srcs = [
+        "task.go",
+        "task_command.go",
+        "task_query.go",
+    ],
     importpath = "github.com/kzmake/micro-kit/service/task/interface/controller",
     visibility = ["//visibility:public"],
     deps = [
         "//service/task/interface/proto:go_default_library",
         "//service/task/usecase/port:go_default_library",
+        "//vendor/github.com/golang/protobuf/ptypes/timestamp:go_default_library",
         "//vendor/github.com/golang/protobuf/ptypes/wrappers:go_default_library",
         "//vendor/github.com/micro/go-micro/v2/errors:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
     ],
 )

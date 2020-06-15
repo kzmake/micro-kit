@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	di "github.com/sarulabs/di/v2"
 
-	"github.com/kzmake/micro-kit/service/task/config"
+	"github.com/kzmake/micro-kit/service/task/pkg/config"
 )
 
 // Production は本番環境用のDIコンテナ定義です。

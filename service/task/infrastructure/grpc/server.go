@@ -16,7 +16,7 @@ import (
 	"github.com/kzmake/micro-kit/pkg/logger/technical"
 	logWrapper "github.com/kzmake/micro-kit/pkg/wrapper/logger"
 
-	"github.com/kzmake/micro-kit/service/task/config"
+	"github.com/kzmake/micro-kit/service/task/pkg/config"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 )
