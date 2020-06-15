@@ -5,29 +5,31 @@ import (
 
 	"github.com/jinzhu/gorm"
 	di "github.com/sarulabs/di/v2"
+
+	"github.com/kzmake/micro-kit/service/task/config"
 )
 
 // Production は本番環境用のDIコンテナ定義です。
 var Production = []di.Def{
 	{
-		Name:  "config",
-		Scope: di.App,
-		Build: func(ctn di.Container) (interface{}, error) {
-			return "", nil
-		},
-	},
-	{
 		Name:  "logWriter",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return os.Stdout, nil
+			c := ctn.Get("config").(*config.Config)
+			switch c.Log.Out {
+			case "stderr":
+				return os.Stderr, nil
+			default:
+				return os.Stdout, nil
+			}
 		},
 	},
 	{
 		Name:  "database",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return gorm.Open("mysql", "test:test@tcp(localhost:3306)/test?charset=utf8mb4&parseTime=True&loc=Local")
+			c := ctn.Get("config").(*config.Config)
+			return gorm.Open(c.Database.Driver, c.Database.DSN)
 		},
 		Close: func(obj interface{}) error {
 			return obj.(*gorm.DB).Close()
