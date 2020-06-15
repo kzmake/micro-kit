@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/micro/go-micro/v2/errors"
+	"golang.org/x/xerrors"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 	"github.com/kzmake/micro-kit/service/task/usecase/port"
@@ -32,7 +33,18 @@ func (c *TaskQuery) Get(
 	rsp *proto.GetResponse,
 ) error {
 	if err := req.Validate(); err != nil {
-		return errors.BadRequest("InvalidParameterIllegalInput.Body", "The request body is not appropriate.")
+		var validationErr proto.GetRequestValidationError
+		if xerrors.As(err, &validationErr) {
+			switch validationErr.Field() { // nolint:gocritic
+			case "Id":
+				if validationErr.Reason() == "value is required and must not be nil." {
+					return errors.BadRequest("InvalidParameterRequired.Id", "The request is missing a required parameter.")
+				}
+				return errors.BadRequest("InvalidParameterFormat.Id", "The parameter id is not valid format.")
+			}
+		}
+
+		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
 	}
 
 	in := &port.GetTaskInputData{

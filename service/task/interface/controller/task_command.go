@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/micro/go-micro/v2/errors"
+	"golang.org/x/xerrors"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 	"github.com/kzmake/micro-kit/service/task/usecase/port"
@@ -32,7 +33,15 @@ func (c *TaskCommand) Create(
 	rsp *proto.CreateResponse,
 ) error {
 	if err := req.Validate(); err != nil {
-		return errors.BadRequest("InvalidParameterIllegalInput.Body", "The request body is not appropriate.")
+		var validationErr proto.CreateRequestValidationError
+		if xerrors.As(err, &validationErr) {
+			switch validationErr.Field() { // nolint:gocritic
+			case "Description":
+				return errors.BadRequest("InvalidParameterFormat.Description", "The parameter description is not valid format.")
+			}
+		}
+
+		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
 	}
 
 	in := &port.CreateTaskInputData{

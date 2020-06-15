@@ -53,13 +53,6 @@ func (m *CreateRequest) Validate() error {
 			}
 		}
 
-		if len(wrapper.GetValue()) > 255 {
-			return CreateRequestValidationError{
-				field:  "Description",
-				reason: "value length must be at most 255 bytes",
-			}
-		}
-
 	}
 
 	return nil
@@ -218,6 +211,18 @@ func (m *GetRequest) Validate() error {
 			}
 		}
 
+		if !_GetRequest_Id_Pattern.MatchString(wrapper.GetValue()) {
+			return GetRequestValidationError{
+				field:  "Id",
+				reason: "value does not match regex pattern \"^[A-Z0-9]{26}$\"",
+			}
+		}
+
+	} else {
+		return GetRequestValidationError{
+			field:  "Id",
+			reason: "value is required and must not be nil.",
+		}
 	}
 
 	return nil
@@ -276,6 +281,8 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetRequestValidationError{}
+
+var _GetRequest_Id_Pattern = regexp.MustCompile("^[A-Z0-9]{26}$")
 
 // Validate checks the field values on GetResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, an error

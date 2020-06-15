@@ -19,7 +19,6 @@ message CreateRequest {
     (validate.rules).string = {
       min_len: 0
       max_len: 255
-      max_bytes: 255
     }
   ];
 }
@@ -30,7 +29,9 @@ message CreateResponse {
 
 message GetRequest {
   google.protobuf.StringValue id = 1 [
+    (validate.rules).message.required = true,
     (validate.rules).string = {
+      pattern: "^[A-Z0-9]{26}$"
       min_len: 26
       max_len: 26
       max_bytes: 26
