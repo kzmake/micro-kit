@@ -36,7 +36,7 @@ func (c *TaskCommand) Create(
 	}
 
 	in := &port.CreateTaskInputData{
-		Description: req.Description.Value,
+		Description: req.GetDescription().GetValue(),
 	}
 
 	out := c.createTaskInputPort.Handle(ctx, in)
