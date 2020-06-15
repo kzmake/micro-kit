@@ -45,6 +45,7 @@ func NewTaskServiceEndpoints() []*api.Endpoint {
 
 type TaskService interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
+	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
 }
 
 type taskService struct {
@@ -69,15 +70,27 @@ func (c *taskService) Create(ctx context.Context, in *CreateRequest, opts ...cli
 	return out, nil
 }
 
+func (c *taskService) Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error) {
+	req := c.c.NewRequest(c.name, "TaskService.Get", in)
+	out := new(GetResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for TaskService service
 
 type TaskServiceHandler interface {
 	Create(context.Context, *CreateRequest, *CreateResponse) error
+	Get(context.Context, *GetRequest, *GetResponse) error
 }
 
 func RegisterTaskServiceHandler(s server.Server, hdlr TaskServiceHandler, opts ...server.HandlerOption) error {
 	type taskService interface {
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
+		Get(ctx context.Context, in *GetRequest, out *GetResponse) error
 	}
 	type TaskService struct {
 		taskService
@@ -92,4 +105,8 @@ type taskServiceHandler struct {
 
 func (h *taskServiceHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
 	return h.TaskServiceHandler.Create(ctx, in, out)
+}
+
+func (h *taskServiceHandler) Get(ctx context.Context, in *GetRequest, out *GetResponse) error {
+	return h.TaskServiceHandler.Get(ctx, in, out)
 }
