@@ -7,6 +7,7 @@ import (
 
 	cli "github.com/micro/cli/v2"
 	micro "github.com/micro/go-micro/v2"
+	"github.com/micro/go-micro/v2/registry"
 	"github.com/micro/go-micro/v2/registry/etcd"
 	"github.com/micro/go-micro/v2/server"
 	"golang.org/x/xerrors"
@@ -14,6 +15,8 @@ import (
 	"github.com/kzmake/micro-kit/pkg/constant"
 	"github.com/kzmake/micro-kit/pkg/logger/technical"
 	logWrapper "github.com/kzmake/micro-kit/pkg/wrapper/logger"
+
+	"github.com/kzmake/micro-kit/service/task/config"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 )
@@ -41,14 +44,17 @@ type Server interface {
 }
 
 // New はサーバーを生成します。
-func New(serviceHandler proto.TaskServiceHandler) Server {
+func New(conf *config.Config, handler proto.TaskServiceHandler) Server {
 	service := micro.NewService(
 		micro.Name(service),
 		micro.Version(version),
+		micro.Address(conf.Endpoint),
 
 		micro.RegisterTTL(30*time.Second),      // nolint:gomnd
 		micro.RegisterInterval(10*time.Second), // nolint:gomnd
-		micro.Registry(etcd.NewRegistry()),
+		micro.Registry(etcd.NewRegistry(
+			registry.Addrs(conf.ServiceDiscovery.Endpoint),
+		)),
 
 		micro.WrapHandler(
 			waitgroup(waitGroup),
@@ -68,13 +74,12 @@ func New(serviceHandler proto.TaskServiceHandler) Server {
 	)
 	service.Init(
 		micro.Action(func(c *cli.Context) error {
-			// load config
 			return nil
 		}),
 	)
 
 	// Register Handler
-	if err := proto.RegisterTaskServiceHandler(service.Server(), serviceHandler); err != nil {
+	if err := proto.RegisterTaskServiceHandler(service.Server(), handler); err != nil {
 		technical.Errorf("%+v", xerrors.Errorf("handler の登録に失敗しました: %w", err))
 	}
 
