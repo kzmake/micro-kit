@@ -193,3 +193,161 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateResponseValidationError{}
+
+// Validate checks the field values on GetRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *GetRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if wrapper := m.GetId(); wrapper != nil {
+
+		if utf8.RuneCountInString(wrapper.GetValue()) != 26 {
+			return GetRequestValidationError{
+				field:  "Id",
+				reason: "value length must be 26 runes",
+			}
+
+		}
+
+		if len(wrapper.GetValue()) > 26 {
+			return GetRequestValidationError{
+				field:  "Id",
+				reason: "value length must be at most 26 bytes",
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// GetRequestValidationError is the validation error returned by
+// GetRequest.Validate if the designated constraints aren't met.
+type GetRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetRequestValidationError) ErrorName() string { return "GetRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetRequestValidationError{}
+
+// Validate checks the field values on GetResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *GetResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetResponseValidationError{
+				field:  "Result",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// GetResponseValidationError is the validation error returned by
+// GetResponse.Validate if the designated constraints aren't met.
+type GetResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetResponseValidationError) ErrorName() string { return "GetResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetResponseValidationError{}

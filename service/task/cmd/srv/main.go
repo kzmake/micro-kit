@@ -30,7 +30,10 @@ func main() {
 	idRepository := ulid.NewIDRepository()
 	taskRepository := mysql.NewTaskRepository(db)
 	createTaskPort := interactor.NewCreateTask(manager, idRepository, taskRepository)
-	requestController := controller.NewTask(createTaskPort)
+	getTaskPort := interactor.NewGetTask(manager, taskRepository)
+	taskQueryController := controller.NewTaskQuery(getTaskPort)
+	taskCommandController := controller.NewTaskCommand(createTaskPort)
+	requestController := controller.NewTask(taskQueryController, taskCommandController)
 
 	s := grpc.New(requestController)
 
