@@ -1,9 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["error.go"],
-    importpath = "github.com/kzmake/micro-kit/service/task/interface/errors",
-    visibility = ["//visibility:public"],
-    deps = ["//vendor/github.com/micro/go-micro/v2/errors:go_default_library"],
-)
