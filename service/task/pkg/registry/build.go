@@ -1,10 +1,10 @@
 package registry
 
 import (
-	"io"
-
 	"github.com/jinzhu/gorm"
 	di "github.com/sarulabs/di/v2"
+
+	log "github.com/kzmake/micro-kit/pkg/logger"
 
 	"github.com/kzmake/micro-kit/service/task/domain/repository"
 	"github.com/kzmake/micro-kit/service/task/infrastructure/mysql"
@@ -22,10 +22,10 @@ func buildULIDIDRepository() func(ctn di.Container) (interface{}, error) {
 	}
 }
 
-func buildLoggerAssistant(logWriterKey string) func(ctn di.Container) (interface{}, error) {
+func buildLoggerAssistant(loggerKey string) func(ctn di.Container) (interface{}, error) {
 	return func(ctn di.Container) (interface{}, error) {
-		logOutput := ctn.Get(logWriterKey).(io.Writer)
-		return logger.New(logOutput), nil
+		lgr := ctn.Get(loggerKey).(*log.Logger)
+		return logger.New(lgr), nil
 	}
 }
 
