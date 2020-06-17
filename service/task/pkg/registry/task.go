@@ -1,40 +1,11 @@
 package registry
 
 import (
-	"os"
-
-	"github.com/jinzhu/gorm"
 	di "github.com/sarulabs/di/v2"
-
-	"github.com/kzmake/micro-kit/service/task/pkg/config"
 )
 
-// Production は本番環境用のDIコンテナ定義です。
-var Production = []di.Def{
-	{
-		Name:  "logWriter",
-		Scope: di.App,
-		Build: func(ctn di.Container) (interface{}, error) {
-			c := ctn.Get("config").(*config.Config)
-			switch c.Log.Out {
-			case "stderr":
-				return os.Stderr, nil
-			default:
-				return os.Stdout, nil
-			}
-		},
-	},
-	{
-		Name:  "database",
-		Scope: di.App,
-		Build: func(ctn di.Container) (interface{}, error) {
-			c := ctn.Get("config").(*config.Config)
-			return gorm.Open(c.Database.Driver, c.Database.DSN)
-		},
-		Close: func(obj interface{}) error {
-			return obj.(*gorm.DB).Close()
-		},
-	},
+// Task はタスクに関するDIコンテナ定義です。
+var Task = []di.Def{
 	{
 		Name:  "idRepository",
 		Scope: di.App,
@@ -48,7 +19,7 @@ var Production = []di.Def{
 	{
 		Name:  "loggerAssistant",
 		Scope: di.App,
-		Build: buildLoggerAssistant("logWriter"),
+		Build: buildLoggerAssistant("logger"),
 	},
 	{
 		Name:  "businessManager",

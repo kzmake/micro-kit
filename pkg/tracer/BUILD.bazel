@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["tracer.go"],
+    importpath = "github.com/kzmake/micro-kit/pkg/tracer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/opentracing/opentracing-go:go_default_library",
+        "//vendor/github.com/uber/jaeger-client-go/config:go_default_library",
+        "//vendor/github.com/uber/jaeger-client-go/log:go_default_library",
+        "//vendor/github.com/uber/jaeger-lib/metrics:go_default_library",
+    ],
+)

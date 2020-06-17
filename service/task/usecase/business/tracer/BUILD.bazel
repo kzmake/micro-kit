@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["tracer.go"],
+    importpath = "github.com/kzmake/micro-kit/service/task/usecase/business/tracer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//service/task/usecase/business:go_default_library",
+        "//vendor/github.com/opentracing/opentracing-go:go_default_library",
+        "//vendor/github.com/opentracing/opentracing-go/ext:go_default_library",
+    ],
+)
