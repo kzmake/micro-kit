@@ -42,8 +42,10 @@ func New() Server {
 
 	task := NewTaskRouter()
 	router := gin.Default()
-	router.POST("/tasks/:description", task.CreateTask)
-	router.POST("/tasks/", task.CreateTask)
+	router.GET("/tasks", task.ListTasks)
+	router.POST("/tasks", task.CreateTask)
+	router.GET("/tasks/:task_id", task.GetTask)
+	router.DELETE("/tasks/:task_id", task.DeleteTask)
 
 	// Register Handler
 	service.Handle("/", router)
