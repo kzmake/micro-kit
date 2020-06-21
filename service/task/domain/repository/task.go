@@ -11,4 +11,6 @@ import (
 type Task interface {
 	Save(context.Context, *aggregate.Task) error
 	Find(context.Context, vo.TaskID) (*aggregate.Task, error)
+	List(context.Context) ([]*aggregate.Task, error)
+	Delete(context.Context, *aggregate.Task) error
 }

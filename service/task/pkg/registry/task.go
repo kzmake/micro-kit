@@ -32,19 +32,29 @@ var Task = []di.Def{
 		Build: buildCreateTaskInteractor("businessManager", "idRepository", "taskRepository"),
 	},
 	{
+		Name:  "listTasksInputPort",
+		Scope: di.App,
+		Build: buildListTasksInteractor("businessManager", "taskRepository"),
+	},
+	{
 		Name:  "getTaskInputPort",
 		Scope: di.App,
 		Build: buildGetTaskInteractor("businessManager", "taskRepository"),
 	},
 	{
+		Name:  "deleteTaskInputPort",
+		Scope: di.App,
+		Build: buildDeleteTaskInteractor("businessManager", "taskRepository"),
+	},
+	{
 		Name:  "taskQueryController",
 		Scope: di.App,
-		Build: buildTaskQueryController("getTaskInputPort"),
+		Build: buildTaskQueryController("listTasksInputPort", "getTaskInputPort"),
 	},
 	{
 		Name:  "taskCommandController",
 		Scope: di.App,
-		Build: buildTaskCommandController("createTaskInputPort"),
+		Build: buildTaskCommandController("createTaskInputPort", "deleteTaskInputPort"),
 	},
 	{
 		Name:  "taskController",

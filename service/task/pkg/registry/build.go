@@ -52,6 +52,14 @@ func buildCreateTaskInteractor(businessManagerKey, idRepositoryKey, taskReposito
 	}
 }
 
+func buildListTasksInteractor(businessManagerKey, taskRepositoryKey string) func(ctn di.Container) (interface{}, error) {
+	return func(ctn di.Container) (interface{}, error) {
+		businessManager := ctn.Get(businessManagerKey).(business.Manager)
+		taskRepository := ctn.Get(taskRepositoryKey).(repository.Task)
+		return interactor.NewListTasks(businessManager, taskRepository), nil
+	}
+}
+
 func buildGetTaskInteractor(businessManagerKey, taskRepositoryKey string) func(ctn di.Container) (interface{}, error) {
 	return func(ctn di.Container) (interface{}, error) {
 		businessManager := ctn.Get(businessManagerKey).(business.Manager)
@@ -60,17 +68,27 @@ func buildGetTaskInteractor(businessManagerKey, taskRepositoryKey string) func(c
 	}
 }
 
-func buildTaskQueryController(getTaskInputPortKey string) func(ctn di.Container) (interface{}, error) {
+func buildDeleteTaskInteractor(businessManagerKey, taskRepositoryKey string) func(ctn di.Container) (interface{}, error) {
 	return func(ctn di.Container) (interface{}, error) {
-		getTaskInputPort := ctn.Get(getTaskInputPortKey).(port.GetTask)
-		return controller.NewTaskQuery(getTaskInputPort), nil
+		businessManager := ctn.Get(businessManagerKey).(business.Manager)
+		taskRepository := ctn.Get(taskRepositoryKey).(repository.Task)
+		return interactor.NewDeleteTask(businessManager, taskRepository), nil
 	}
 }
 
-func buildTaskCommandController(createTaskInputPortKey string) func(ctn di.Container) (interface{}, error) {
+func buildTaskQueryController(listTaskInputPortKey, getTaskInputPortKey string) func(ctn di.Container) (interface{}, error) {
+	return func(ctn di.Container) (interface{}, error) {
+		listTaskInputPort := ctn.Get(listTaskInputPortKey).(port.ListTasks)
+		getTaskInputPort := ctn.Get(getTaskInputPortKey).(port.GetTask)
+		return controller.NewTaskQuery(listTaskInputPort, getTaskInputPort), nil
+	}
+}
+
+func buildTaskCommandController(createTaskInputPortKey, deleteTaskInputPortKey string) func(ctn di.Container) (interface{}, error) {
 	return func(ctn di.Container) (interface{}, error) {
 		createTaskInputPort := ctn.Get(createTaskInputPortKey).(port.CreateTask)
-		return controller.NewTaskCommand(createTaskInputPort), nil
+		deleteTaskInputPort := ctn.Get(deleteTaskInputPortKey).(port.DeleteTask)
+		return controller.NewTaskCommand(createTaskInputPort, deleteTaskInputPort), nil
 	}
 }
 
