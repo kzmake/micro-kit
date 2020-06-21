@@ -45,7 +45,9 @@ func NewTaskServiceEndpoints() []*api.Endpoint {
 
 type TaskService interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 }
 
 type taskService struct {
@@ -70,9 +72,29 @@ func (c *taskService) Create(ctx context.Context, in *CreateRequest, opts ...cli
 	return out, nil
 }
 
+func (c *taskService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "TaskService.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskService) Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error) {
 	req := c.c.NewRequest(c.name, "TaskService.Get", in)
 	out := new(GetResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "TaskService.Delete", in)
+	out := new(DeleteResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,13 +106,17 @@ func (c *taskService) Get(ctx context.Context, in *GetRequest, opts ...client.Ca
 
 type TaskServiceHandler interface {
 	Create(context.Context, *CreateRequest, *CreateResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
 	Get(context.Context, *GetRequest, *GetResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 }
 
 func RegisterTaskServiceHandler(s server.Server, hdlr TaskServiceHandler, opts ...server.HandlerOption) error {
 	type taskService interface {
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Get(ctx context.Context, in *GetRequest, out *GetResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 	}
 	type TaskService struct {
 		taskService
@@ -107,6 +133,14 @@ func (h *taskServiceHandler) Create(ctx context.Context, in *CreateRequest, out 
 	return h.TaskServiceHandler.Create(ctx, in, out)
 }
 
+func (h *taskServiceHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.TaskServiceHandler.List(ctx, in, out)
+}
+
 func (h *taskServiceHandler) Get(ctx context.Context, in *GetRequest, out *GetResponse) error {
 	return h.TaskServiceHandler.Get(ctx, in, out)
+}
+
+func (h *taskServiceHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.TaskServiceHandler.Delete(ctx, in, out)
 }

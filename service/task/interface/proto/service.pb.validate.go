@@ -187,6 +187,151 @@ var _ interface {
 	ErrorName() string
 } = CreateResponseValidationError{}
 
+// Validate checks the field values on ListRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *ListRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// ListRequestValidationError is the validation error returned by
+// ListRequest.Validate if the designated constraints aren't met.
+type ListRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListRequestValidationError) ErrorName() string { return "ListRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ListRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListRequestValidationError{}
+
+// Validate checks the field values on ListResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *ListResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListResponseValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListResponseValidationError is the validation error returned by
+// ListResponse.Validate if the designated constraints aren't met.
+type ListResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListResponseValidationError) ErrorName() string { return "ListResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ListResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListResponseValidationError{}
+
 // Validate checks the field values on GetRequest with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *GetRequest) Validate() error {
@@ -358,3 +503,166 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetResponseValidationError{}
+
+// Validate checks the field values on DeleteRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *DeleteRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if wrapper := m.GetId(); wrapper != nil {
+
+		if utf8.RuneCountInString(wrapper.GetValue()) != 26 {
+			return DeleteRequestValidationError{
+				field:  "Id",
+				reason: "value length must be 26 runes",
+			}
+
+		}
+
+		if len(wrapper.GetValue()) > 26 {
+			return DeleteRequestValidationError{
+				field:  "Id",
+				reason: "value length must be at most 26 bytes",
+			}
+		}
+
+		if !_DeleteRequest_Id_Pattern.MatchString(wrapper.GetValue()) {
+			return DeleteRequestValidationError{
+				field:  "Id",
+				reason: "value does not match regex pattern \"^[A-Z0-9]{26}$\"",
+			}
+		}
+
+	} else {
+		return DeleteRequestValidationError{
+			field:  "Id",
+			reason: "value is required and must not be nil.",
+		}
+	}
+
+	return nil
+}
+
+// DeleteRequestValidationError is the validation error returned by
+// DeleteRequest.Validate if the designated constraints aren't met.
+type DeleteRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteRequestValidationError) ErrorName() string { return "DeleteRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DeleteRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteRequestValidationError{}
+
+var _DeleteRequest_Id_Pattern = regexp.MustCompile("^[A-Z0-9]{26}$")
+
+// Validate checks the field values on DeleteResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *DeleteResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// DeleteResponseValidationError is the validation error returned by
+// DeleteResponse.Validate if the designated constraints aren't met.
+type DeleteResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteResponseValidationError) ErrorName() string { return "DeleteResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DeleteResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteResponseValidationError{}

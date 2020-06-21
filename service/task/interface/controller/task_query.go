@@ -14,16 +14,56 @@ import (
 
 // TaskQuery はタスクに関する Query 系の Controller の定義です。
 type TaskQuery struct {
-	getTaskInputPort port.GetTask
+	listTasksInputPort port.ListTasks
+	getTaskInputPort   port.GetTask
 }
 
 // NewTaskQuery はタスクに関する Query 系の Controller を生成します。
 func NewTaskQuery(
+	listTasksInputPort port.ListTasks,
 	getTaskInputPort port.GetTask,
 ) *TaskQuery {
 	return &TaskQuery{
-		getTaskInputPort: getTaskInputPort,
+		listTasksInputPort: listTasksInputPort,
+		getTaskInputPort:   getTaskInputPort,
 	}
+}
+
+// List は input / output を制御し、タスク一覧の取得処理を行います。
+func (c *TaskQuery) List(
+	ctx context.Context,
+	req *proto.ListRequest,
+	rsp *proto.ListResponse,
+) error {
+	if err := req.Validate(); err != nil {
+		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
+	}
+
+	in := &port.ListTasksInputData{}
+
+	out := c.listTasksInputPort.Handle(ctx, in)
+	if err := out.Error; err != nil {
+		return out.Error
+	}
+
+	tasks := make([]*proto.Task, 0, len(out.Tasks))
+	for _, t := range out.Tasks {
+		task := &proto.Task{
+			Id:          &wrappers.StringValue{Value: string(t.ID)},
+			Description: &wrappers.StringValue{Value: string(t.Description)},
+			CreatedAt:   &timestamp.Timestamp{Seconds: t.CreatedAt.Unix()},
+			UpdatedAt:   &timestamp.Timestamp{Seconds: t.UpdatedAt.Unix()},
+		}
+		if task.DeletedAt != nil {
+			task.DeletedAt = &timestamp.Timestamp{Seconds: t.DeletedAt.Unix()}
+		}
+
+		tasks = append(tasks, task)
+	}
+
+	rsp.Results = tasks
+
+	return nil
 }
 
 // Get は input / output を制御し、タスク取得処理を行います。
