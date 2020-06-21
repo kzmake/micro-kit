@@ -4,7 +4,9 @@ go_library(
     name = "go_default_library",
     srcs = [
         "create_task.go",
+        "delete_task.go",
         "get_task.go",
+        "list_tasks.go",
     ],
     importpath = "github.com/kzmake/micro-kit/service/task/usecase/port",
     visibility = ["//visibility:public"],

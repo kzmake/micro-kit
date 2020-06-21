@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "code.go",
+        "errors.go",
+    ],
+    importpath = "github.com/kzmake/micro-kit/service/task/domain/errors",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/cockroachdb/errors:go_default_library",
+        "//vendor/github.com/cockroachdb/errors/markers:go_default_library",
+    ],
+)
