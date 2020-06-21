@@ -10,13 +10,14 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/constant:go_default_library",
-        "//pkg/logger/technical:go_default_library",
         "//service/task/interface/proto:go_default_library",
         "//vendor/github.com/gin-gonic/gin:go_default_library",
         "//vendor/github.com/golang/protobuf/ptypes/wrappers:go_default_library",
         "//vendor/github.com/micro/cli/v2:go_default_library",
         "//vendor/github.com/micro/go-micro/v2/client/grpc:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/errors:go_default_library",
         "//vendor/github.com/micro/go-micro/v2/registry/etcd:go_default_library",
         "//vendor/github.com/micro/go-micro/v2/web:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
     ],
 )
