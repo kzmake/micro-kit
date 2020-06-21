@@ -3,11 +3,12 @@ package controller
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/micro/go-micro/v2/errors"
 	"golang.org/x/xerrors"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/golang/protobuf/ptypes/wrappers"
+
+	"github.com/kzmake/micro-kit/service/task/domain/errors"
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 	"github.com/kzmake/micro-kit/service/task/usecase/port"
 )
@@ -36,14 +37,14 @@ func (c *TaskQuery) List(
 	rsp *proto.ListResponse,
 ) error {
 	if err := req.Validate(); err != nil {
-		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
+		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.ListTasksInputData{}
 
 	out := c.listTasksInputPort.Handle(ctx, in)
 	if err := out.Error; err != nil {
-		return out.Error
+		return encodeError(ctx, out.Error)
 	}
 
 	tasks := make([]*proto.Task, 0, len(out.Tasks))
@@ -77,14 +78,11 @@ func (c *TaskQuery) Get(
 		if xerrors.As(err, &validationErr) {
 			switch validationErr.Field() { // nolint:gocritic
 			case "Id":
-				if validationErr.Reason() == "value is required and must not be nil." {
-					return errors.BadRequest("InvalidParameterRequired.Id", "The request is missing a required parameter.")
-				}
-				return errors.BadRequest("InvalidParameterFormat.Id", "The parameter id is not valid format.")
+				return encodeError(ctx, errors.WrapCode(errors.IllegalInputTaskID, err))
 			}
 		}
 
-		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
+		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.GetTaskInputData{
@@ -93,7 +91,7 @@ func (c *TaskQuery) Get(
 
 	out := c.getTaskInputPort.Handle(ctx, in)
 	if err := out.Error; err != nil {
-		return out.Error
+		return encodeError(ctx, out.Error)
 	}
 
 	task := &proto.Task{

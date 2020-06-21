@@ -3,11 +3,12 @@ package controller
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/micro/go-micro/v2/errors"
 	"golang.org/x/xerrors"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/golang/protobuf/ptypes/wrappers"
+
+	"github.com/kzmake/micro-kit/service/task/domain/errors"
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 	"github.com/kzmake/micro-kit/service/task/usecase/port"
 )
@@ -40,11 +41,11 @@ func (c *TaskCommand) Create(
 		if xerrors.As(err, &validationErr) {
 			switch validationErr.Field() { // nolint:gocritic
 			case "Description":
-				return errors.BadRequest("InvalidParameterFormat.Description", "The parameter description is not valid format.")
+				return encodeError(ctx, errors.WrapCode(errors.IllegalInputDescription, err))
 			}
 		}
 
-		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
+		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.CreateTaskInputData{
@@ -53,7 +54,7 @@ func (c *TaskCommand) Create(
 
 	out := c.createTaskInputPort.Handle(ctx, in)
 	if err := out.Error; err != nil {
-		return out.Error
+		return encodeError(ctx, out.Error)
 	}
 
 	rsp.Result = &proto.Task{
@@ -80,11 +81,11 @@ func (c *TaskCommand) Delete(
 		if xerrors.As(err, &validationErr) {
 			switch validationErr.Field() { // nolint:gocritic
 			case "Id": // nolint:goconst
-				return errors.BadRequest("InvalidParameterFormat.Id", "The parameter id is not valid format.")
+				return encodeError(ctx, errors.WrapCode(errors.IllegalInputTaskID, err))
 			}
 		}
 
-		return errors.InternalServerError("InternalServerError", "An internal error has occurred. Please try your query again at a later time.")
+		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.DeleteTaskInputData{
@@ -93,7 +94,7 @@ func (c *TaskCommand) Delete(
 
 	out := c.deleteTaskInputPort.Handle(ctx, in)
 	if err := out.Error; err != nil {
-		return out.Error
+		return encodeError(ctx, out.Error)
 	}
 
 	return nil

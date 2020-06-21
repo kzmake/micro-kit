@@ -5,11 +5,17 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 
 	"github.com/kzmake/micro-kit/service/task/domain/aggregate"
+	"github.com/kzmake/micro-kit/service/task/domain/errors"
 	"github.com/kzmake/micro-kit/service/task/domain/repository"
 	"github.com/kzmake/micro-kit/service/task/domain/vo"
+)
+
+const (
+	duplicateEntry uint16 = 1062
 )
 
 // Task はタスクに関するスキーマです。
@@ -36,7 +42,13 @@ func (r taskRepository) Save(ctx context.Context, task *aggregate.Task) error {
 			ID:          string(task.ID),
 			Description: string(task.Description),
 		}).Error; err != nil {
-			return xerrors.Errorf("Saveに失敗しました: %w", err)
+			var mysqlErr *mysql.MySQLError
+			if xerrors.As(err, &mysqlErr) {
+				if mysqlErr.Number == duplicateEntry {
+					return errors.WrapCode(errors.DuplicateTask, err)
+				}
+			}
+			return errors.WrapCode(errors.Unexpected, err)
 		}
 
 		return nil
@@ -52,7 +64,7 @@ func (r taskRepository) Save(ctx context.Context, task *aggregate.Task) error {
 func (r taskRepository) List(ctx context.Context) ([]*aggregate.Task, error) {
 	var resources []Task
 	if err := r.db.Find(&resources).Error; err != nil {
-		return nil, xerrors.Errorf("Listに失敗しました: %w", err)
+		return nil, errors.WrapCode(errors.Unexpected, err)
 	}
 
 	tasks := make([]*aggregate.Task, 0, len(resources))
@@ -74,7 +86,10 @@ func (r taskRepository) List(ctx context.Context) ([]*aggregate.Task, error) {
 func (r taskRepository) Find(ctx context.Context, id vo.TaskID) (*aggregate.Task, error) {
 	var res Task
 	if err := r.db.Where("id = ?", string(id)).First(&res).Error; err != nil {
-		return nil, xerrors.Errorf("Findに失敗しました: %w", err)
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, errors.WrapCode(errors.NotFoundTask, err)
+		}
+		return nil, errors.WrapCode(errors.Unexpected, err)
 	}
 
 	task := &aggregate.Task{
@@ -93,12 +108,12 @@ func (r taskRepository) Find(ctx context.Context, id vo.TaskID) (*aggregate.Task
 func (r taskRepository) Delete(ctx context.Context, task *aggregate.Task) error {
 	err := r.db.Transaction(func(tx *gorm.DB) error {
 		if !r.isExist(tx, task.ID) {
-			return xerrors.Errorf("対象が存在しませんでした")
+			return errors.NewCode(errors.NotFoundTask)
 		}
 
 		ret := tx.Where("id = ?", string(task.ID)).Delete(&Task{})
 		if err := ret.Error; err != nil {
-			return xerrors.Errorf("Deleteに失敗しました: %w", err)
+			return errors.WrapCode(errors.Unexpected, err)
 		}
 
 		return nil
