@@ -1,6 +1,8 @@
 # Monorepo and Microservices kit using micro/micro for [@kzmake](https://github.com/kzmake)
 
-※あくまで自分用です
+[![codecov](https://codecov.io/gh/kzmake/micro-kit/branch/master/graph/badge.svg)](https://codecov.io/gh/kzmake/micro-kit)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kzmake/micro-kit)](https://goreportcard.com/report/github.com/kzmake/micro-kit)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/kzmake/micro-kit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/kzmake/micro-kit/alerts/)
 
 - クリーンアーキテクチャ(を意識したレイヤードアーキテクチャ)
 - マイクロサービス
