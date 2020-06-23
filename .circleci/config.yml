@@ -31,7 +31,7 @@ jobs:
           - MYSQL_PASSWORD=test
     steps:
       - checkout
-      - run: go get github.com/ory/go-acc
+      - run: go get github.com/ory/go-acc@v0.2.3
       - run:
           name: install golangci-lint
           command: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.27.0
@@ -48,6 +48,6 @@ jobs:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run:
           name: testing
-          command: go-acc -o coverage.out ./...
+          command: go-acc -o coverage.out --ignore proto ./...
       - codecov/upload:
           file: ./coverage.out
