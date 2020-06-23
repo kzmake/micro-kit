@@ -36,10 +36,6 @@ func (c *TaskQuery) List(
 	req *proto.ListRequest,
 	rsp *proto.ListResponse,
 ) error {
-	if err := req.Validate(); err != nil {
-		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
-	}
-
 	in := &port.ListTasksInputData{}
 
 	out := c.listTasksInputPort.Handle(ctx, in)
@@ -55,9 +51,11 @@ func (c *TaskQuery) List(
 			CreatedAt:   &timestamp.Timestamp{Seconds: t.CreatedAt.Unix()},
 			UpdatedAt:   &timestamp.Timestamp{Seconds: t.UpdatedAt.Unix()},
 		}
-		if task.DeletedAt != nil {
-			task.DeletedAt = &timestamp.Timestamp{Seconds: t.DeletedAt.Unix()}
-		}
+
+		// nolint:gocritic
+		// if task.DeletedAt != nil {
+		// 	task.DeletedAt = &timestamp.Timestamp{Seconds: t.DeletedAt.Unix()}
+		// }
 
 		tasks = append(tasks, task)
 	}
@@ -73,6 +71,10 @@ func (c *TaskQuery) Get(
 	req *proto.GetRequest,
 	rsp *proto.GetResponse,
 ) error {
+	if req == nil {
+		return encodeError(ctx, errors.NewCode(errors.IllegalInputBody))
+	}
+
 	if err := req.Validate(); err != nil {
 		var validationErr proto.GetRequestValidationError
 		if xerrors.As(err, &validationErr) {
@@ -81,8 +83,6 @@ func (c *TaskQuery) Get(
 				return encodeError(ctx, errors.WrapCode(errors.IllegalInputTaskID, err))
 			}
 		}
-
-		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.GetTaskInputData{
@@ -99,9 +99,6 @@ func (c *TaskQuery) Get(
 		Description: &wrappers.StringValue{Value: string(out.Task.Description)},
 		CreatedAt:   &timestamp.Timestamp{Seconds: out.Task.CreatedAt.Unix()},
 		UpdatedAt:   &timestamp.Timestamp{Seconds: out.Task.UpdatedAt.Unix()},
-	}
-	if out.Task.DeletedAt != nil {
-		task.DeletedAt = &timestamp.Timestamp{Seconds: out.Task.DeletedAt.Unix()}
 	}
 
 	rsp.Result = task

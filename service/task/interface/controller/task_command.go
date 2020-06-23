@@ -36,6 +36,10 @@ func (c *TaskCommand) Create(
 	req *proto.CreateRequest,
 	rsp *proto.CreateResponse,
 ) error {
+	if req == nil {
+		return encodeError(ctx, errors.NewCode(errors.IllegalInputBody))
+	}
+
 	if err := req.Validate(); err != nil {
 		var validationErr proto.CreateRequestValidationError
 		if xerrors.As(err, &validationErr) {
@@ -44,8 +48,6 @@ func (c *TaskCommand) Create(
 				return encodeError(ctx, errors.WrapCode(errors.IllegalInputDescription, err))
 			}
 		}
-
-		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.CreateTaskInputData{
@@ -63,9 +65,6 @@ func (c *TaskCommand) Create(
 		CreatedAt:   &timestamp.Timestamp{Seconds: out.Task.CreatedAt.Unix()},
 		UpdatedAt:   &timestamp.Timestamp{Seconds: out.Task.UpdatedAt.Unix()},
 	}
-	if out.Task.DeletedAt != nil {
-		rsp.Result.DeletedAt = &timestamp.Timestamp{Seconds: out.Task.DeletedAt.Unix()}
-	}
 
 	return nil
 }
@@ -76,6 +75,10 @@ func (c *TaskCommand) Delete(
 	req *proto.DeleteRequest,
 	rsp *proto.DeleteResponse,
 ) error {
+	if req == nil {
+		return encodeError(ctx, errors.NewCode(errors.IllegalInputBody))
+	}
+
 	if err := req.Validate(); err != nil {
 		var validationErr proto.DeleteRequestValidationError
 		if xerrors.As(err, &validationErr) {
@@ -84,8 +87,6 @@ func (c *TaskCommand) Delete(
 				return encodeError(ctx, errors.WrapCode(errors.IllegalInputTaskID, err))
 			}
 		}
-
-		return encodeError(ctx, errors.WrapCode(errors.IllegalInputBody, err))
 	}
 
 	in := &port.DeleteTaskInputData{
