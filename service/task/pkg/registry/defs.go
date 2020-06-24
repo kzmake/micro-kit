@@ -1,11 +1,52 @@
 package registry
 
 import (
+	"os"
+	"time"
+
+	"github.com/jinzhu/gorm"
 	di "github.com/sarulabs/di/v2"
+
+	"github.com/kzmake/micro-kit/pkg/logger"
+	"github.com/kzmake/micro-kit/pkg/logger/technical"
+	"github.com/kzmake/micro-kit/pkg/tracer"
+
+	"github.com/kzmake/micro-kit/service/task/pkg/config"
 )
 
-// Task はタスクに関するDIコンテナ定義です。
-var Task = []di.Def{
+var outputs = []di.Def{
+	{
+		Name:  "logger",
+		Scope: di.App,
+		Build: func(ctn di.Container) (interface{}, error) {
+			l := logger.New(
+				logger.WithOutput(os.Stdout),
+				logger.WithTimeFormat(time.RFC3339Nano),
+				logger.WithSkipFrameCount(4), // nolint:gomnd
+			)
+			technical.Logger = l
+			return l, nil
+		},
+	},
+	{
+		Name:  "tracer",
+		Scope: di.App,
+		Build: func(ctn di.Container) (interface{}, error) { return tracer.New("task") },
+	},
+	{
+		Name:  "database",
+		Scope: di.App,
+		Build: func(ctn di.Container) (interface{}, error) {
+			c := ctn.Get("config").(*config.Config)
+			return gorm.Open(c.Database.Driver, c.Database.DSN)
+		},
+		Close: func(obj interface{}) error {
+			return obj.(*gorm.DB).Close()
+		},
+	},
+}
+
+var cores = []di.Def{
 	{
 		Name:  "idRepository",
 		Scope: di.App,
