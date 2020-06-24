@@ -11,12 +11,12 @@ import (
 	"github.com/micro/go-micro/v2/client/grpc"
 	"github.com/micro/go-micro/v2/errors"
 
-	"github.com/kzmake/micro-kit/pkg/constant"
+	pconstant "github.com/kzmake/micro-kit/pkg/constant"
 
 	"github.com/kzmake/micro-kit/service/task/interface/proto"
 )
 
-var client = proto.NewTaskService(constant.Service.Task, grpc.NewClient())
+var client = proto.NewTaskService(pconstant.TaskService, grpc.NewClient())
 
 // TaskRouter は task に関するルーターの定義です。
 type TaskRouter struct{}

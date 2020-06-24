@@ -7,26 +7,27 @@ import (
 
 	cli "github.com/micro/cli/v2"
 	micro "github.com/micro/go-micro/v2"
-	reg "github.com/micro/go-micro/v2/registry"
+	mregistry "github.com/micro/go-micro/v2/registry"
 	"github.com/micro/go-micro/v2/registry/etcd"
-	"github.com/micro/go-micro/v2/server"
+	mserver "github.com/micro/go-micro/v2/server"
 
-	"github.com/kzmake/micro-kit/pkg/constant"
-	logWrapper "github.com/kzmake/micro-kit/pkg/wrapper/logger"
+	pconfig "github.com/kzmake/micro-kit/pkg/config"
+	pconstant "github.com/kzmake/micro-kit/pkg/constant"
+	plogger "github.com/kzmake/micro-kit/pkg/wrapper/logger"
 
+	"github.com/kzmake/micro-kit/service/task/interface/proto"
 	"github.com/kzmake/micro-kit/service/task/pkg/config"
+	"github.com/kzmake/micro-kit/service/task/pkg/registry"
 )
 
 var (
-	service = constant.Service.Task
+	name    = pconstant.TaskService
 	version = "v0.1.0"
 )
 
-var wg = new(sync.WaitGroup)
-
-func waitgroup(waitGroup *sync.WaitGroup) server.HandlerWrapper {
-	return func(h server.HandlerFunc) server.HandlerFunc {
-		return func(ctx context.Context, req server.Request, rsp interface{}) error {
+func waitgroup(waitGroup *sync.WaitGroup) mserver.HandlerWrapper {
+	return func(h mserver.HandlerFunc) mserver.HandlerFunc {
+		return func(ctx context.Context, req mserver.Request, rsp interface{}) error {
 			waitGroup.Add(1)
 			defer waitGroup.Done()
 			return h(ctx, req, rsp)
@@ -35,27 +36,21 @@ func waitgroup(waitGroup *sync.WaitGroup) server.HandlerWrapper {
 }
 
 // New はサーバーを生成します。
-func New(conf *config.Config) micro.Service {
-	s := micro.NewService(
-		micro.Name(service),
+func New() (micro.Service, error) {
+	wg := new(sync.WaitGroup)
+	service := micro.NewService(
+		micro.Name(name),
 		micro.Version(version),
-		micro.Address(conf.Endpoint),
-
-		micro.RegisterTTL(30*time.Second),      // nolint:gomnd
-		micro.RegisterInterval(10*time.Second), // nolint:gomnd
-		micro.Registry(etcd.NewRegistry(
-			reg.Addrs(conf.ServiceDiscovery.Endpoint),
-		)),
 
 		micro.WrapHandler(
 			waitgroup(wg),
-			logWrapper.NewHandlerWrapper(),
+			plogger.NewHandlerWrapper(),
 		),
 		micro.WrapSubscriber(
-			logWrapper.NewSubscriberWrapper(),
+			plogger.NewSubscriberWrapper(),
 		),
 		micro.WrapClient(
-			logWrapper.NewClientWrapper(),
+			plogger.NewClientWrapper(),
 		),
 
 		micro.BeforeStop(func() error {
@@ -64,11 +59,35 @@ func New(conf *config.Config) micro.Service {
 		}),
 	)
 
-	s.Init(
+	c, err := pconfig.New("TASK", &config.Config{})
+	if err != nil {
+		return nil, err
+	}
+	cfg := c.(*config.Config)
+
+	service.Init(
 		micro.Action(func(c *cli.Context) error {
 			return nil
 		}),
+
+		micro.Address(cfg.Endpoint),
+
+		micro.RegisterTTL(30*time.Second),      // nolint:gomnd
+		micro.RegisterInterval(10*time.Second), // nolint:gomnd
+		micro.Registry(etcd.NewRegistry(
+			mregistry.Addrs(cfg.ServiceDiscovery.Endpoint),
+		)),
 	)
 
-	return s
+	ctn, err := registry.New(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	h := ctn.Get("taskController").(proto.TaskServiceHandler)
+	if err := proto.RegisterTaskServiceHandler(service.Server(), h); err != nil {
+		return nil, err
+	}
+
+	return service, nil
 }

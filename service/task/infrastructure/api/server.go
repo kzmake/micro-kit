@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	service = constant.Service.Task
+	service = constant.TaskAPI
 	version = "v0.1.0"
 )
 
@@ -31,9 +31,7 @@ func New() Server {
 		web.Registry(etcd.NewRegistry()),
 	)
 	err := service.Init(
-		// init
 		web.Action(func(c *cli.Context) {
-			// load config
 		}),
 	)
 	if err != nil {

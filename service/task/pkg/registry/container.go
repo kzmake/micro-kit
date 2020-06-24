@@ -4,16 +4,22 @@ import (
 	"golang.org/x/xerrors"
 
 	di "github.com/sarulabs/di/v2"
+
+	"github.com/kzmake/micro-kit/service/task/pkg/config"
 )
 
-// New は defs をもとにDIコンテナを生成します。
-func New(defs ...di.Def) (di.Container, error) {
+// New は config をもとにDIコンテナを生成します。
+func New(cfg *config.Config) (di.Container, error) {
 	builder, err := di.NewBuilder()
 	if err != nil {
 		return nil, xerrors.Errorf("Builder生成に失敗しました: %w", err)
 	}
 
-	if err := builder.Add(defs...); err != nil {
+	if err := builder.Add(append(append(cores, outputs...), di.Def{
+		Name:  "config",
+		Scope: di.App,
+		Build: func(ctn di.Container) (interface{}, error) { return cfg, nil },
+	})...); err != nil {
 		return nil, xerrors.Errorf("Definitions追加に失敗しました: %w", err)
 	}
 
