@@ -14,7 +14,7 @@ require (
 	github.com/coreos/etcd v3.3.22+incompatible // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/envoyproxy/protoc-gen-validate v0.3.0
+	github.com/envoyproxy/protoc-gen-validate v0.4.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/gin-gonic/gin v1.6.3
@@ -23,7 +23,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.4.1 // indirect
+	github.com/google/go-cmp v0.5.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.14.5 // indirect
@@ -46,20 +46,17 @@ require (
 	github.com/rs/zerolog v1.19.0
 	github.com/sarulabs/di/v2 v2.4.0
 	github.com/sirupsen/logrus v1.6.0 // indirect
-	github.com/stretchr/testify v1.6.0
+	github.com/stretchr/testify v1.6.1
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20200427203606-3cfed13b9966 // indirect
 	github.com/uber/jaeger-client-go v2.24.0+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible
 	go.uber.org/zap v1.15.0 // indirect
-	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
-	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
+	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc // indirect
 	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980 // indirect
+	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
-	golang.org/x/tools v0.0.0-20200529172331-a64b76657301 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
+	golang.org/x/tools v0.0.0-20200819140908-cf83efe03cf8 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/protobuf v1.23.0
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200506231410-2ff61e1afc86 // indirect
