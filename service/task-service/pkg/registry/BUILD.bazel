@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "build.go",
+        "container.go",
+        "defs.go",
+    ],
+    importpath = "github.com/kzmake/micro-kit/service/task-service/pkg/registry",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/logger:go_default_library",
+        "//pkg/logger/technical:go_default_library",
+        "//pkg/tracer:go_default_library",
+        "//service/task-service/domain/repository:go_default_library",
+        "//service/task-service/infrastructure/mysql:go_default_library",
+        "//service/task-service/infrastructure/ulid:go_default_library",
+        "//service/task-service/interface/controller:go_default_library",
+        "//service/task-service/pkg/config:go_default_library",
+        "//service/task-service/usecase/business:go_default_library",
+        "//service/task-service/usecase/business/logger:go_default_library",
+        "//service/task-service/usecase/interactor:go_default_library",
+        "//service/task-service/usecase/port:go_default_library",
+        "//vendor/github.com/jinzhu/gorm:go_default_library",
+        "//vendor/github.com/sarulabs/di/v2:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
+    ],
+)

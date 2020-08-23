@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["ulid.go"],
+    importpath = "github.com/kzmake/micro-kit/service/task-service/infrastructure/ulid",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//service/task-service/domain/repository:go_default_library",
+        "//service/task-service/domain/vo:go_default_library",
+        "//vendor/github.com/oklog/ulid/v2:go_default_library",
+    ],
+)
