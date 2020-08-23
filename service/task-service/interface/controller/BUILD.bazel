@@ -1,0 +1,44 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "encode.go",
+        "task.go",
+        "task_command.go",
+        "task_query.go",
+    ],
+    importpath = "github.com/kzmake/micro-kit/service/task-service/interface/controller",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//service/task-service/domain/errors:go_default_library",
+        "//service/task-service/interface/proto:go_default_library",
+        "//service/task-service/usecase/port:go_default_library",
+        "//vendor/github.com/golang/protobuf/ptypes/timestamp:go_default_library",
+        "//vendor/github.com/golang/protobuf/ptypes/wrappers:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/errors:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "task_command_test.go",
+        "task_query_test.go",
+        "task_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//service/task-service/domain/aggregate:go_default_library",
+        "//service/task-service/domain/errors:go_default_library",
+        "//service/task-service/domain/vo:go_default_library",
+        "//service/task-service/interface/proto:go_default_library",
+        "//service/task-service/usecase/port:go_default_library",
+        "//vendor/github.com/golang/protobuf/ptypes/timestamp:go_default_library",
+        "//vendor/github.com/golang/protobuf/ptypes/wrappers:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/errors:go_default_library",
+        "//vendor/github.com/stretchr/testify/require:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
+    ],
+)

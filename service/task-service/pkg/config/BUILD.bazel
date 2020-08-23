@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["config.go"],
+    importpath = "github.com/kzmake/micro-kit/service/task-service/pkg/config",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/config:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/config/source/env:go_default_library",
+        "//vendor/github.com/micro/go-micro/v2/config/source/etcd:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
+    ],
+)

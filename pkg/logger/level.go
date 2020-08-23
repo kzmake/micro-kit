@@ -28,3 +28,29 @@ const (
 	// TraceLevel defines trace log level.
 	TraceLevel Level = zerolog.TraceLevel
 )
+
+// ParseLevel は指定された文字列から Level を生成します。
+func ParseLevel(level string) Level {
+	switch level {
+	case "debug":
+		return DebugLevel
+	case "info":
+		return InfoLevel
+	case "warn":
+		return WarnLevel
+	case "error":
+		return ErrorLevel
+	case "fatal":
+		return FatalLevel
+	case "panic":
+		return PanicLevel
+	case "no":
+		return NoLevel
+	case "disabled":
+		return Disabled
+	case "trace":
+		return TraceLevel
+	default:
+		return InfoLevel
+	}
+}
