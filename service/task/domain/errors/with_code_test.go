@@ -38,7 +38,10 @@ func TestWithCode(t *testing.T) {
 
 			require.Equal(t, fmt.Sprintf("%s", tc.err), fmt.Sprintf("%s", wcode))
 			require.Equal(t, fmt.Sprintf("%v", tc.err), fmt.Sprintf("%v", wcode))
-			require.Equal(t, fmt.Sprintf("code: Unexpected\n  - %+v", tc.err), fmt.Sprintf("%+v", wcode))
+			require.Equal(t,
+				fmt.Sprintf("stderror\n(1) code: %s\nWraps: (2) stderror\nError types: (1) *errors.withCode (2) *errors.errorString",
+					code.String()),
+				fmt.Sprintf("%+v", wcode))
 		})
 	}
 }
